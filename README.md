@@ -1,46 +1,71 @@
-# day1
+# day2
 
 
-# Monday, 12 October 2020
+# Tuesday, 13 October 2020
 # Professor Leon Tabak
 # CSC355 Open Source Development
 # Zhifei Xu
 
 
-
-
 import numpy as np
 from PIL import Image
-from PIL import ImageEnhance
-from PIL import ImageDraw
-from PIL import ImageFont
-
+from PIL import ImageDraw, ImageOps, ImageEnhance
 
 def main():
     print( "Composite" )
 
     # replace this path with a path
     # that specifies the location of your image file
-    original_photo = Image.open( "Laker.jpg" )
-    new_photo = original_photo.reduce( 1)
-    en = ImageEnhance.Color(new_photo)
-    enhance_end = en.enhance(3)
+    photo = Image.open( r"/Users/xuzhifei/Desktop/image/1.jpg" )
+    original_photo = photo.reduce(1)
+
+    enhance_photo = ImageEnhance.Color(original_photo)
+    enhance = enhance_photo.enhance(2)
 
 
-    font = ImageFont.truetype("Baoli.ttc", 60)
-    add_number = ImageDraw.Draw(enhance_end)
-    add_number.text((300,-20), u"24", font=font, fill="yellow")
-    add_number.text((230, 200), u"For Kobe", font=font, fill="white")
-    # size of photo that shown
+    print("original_photo mode", original_photo.mode)
+    print("original_photo size", original_photo.size)
 
-    original_width, original_height = original_photo.size
-    print(f'Photo measures {original_width} x {original_height} pixels')
-    new_width, new_height = enhance_end.size
-    print( f'Photo measures {new_width} x {new_height} pixels' )
+    change_photo = ImageOps.grayscale(original_photo).convert("RGB")
 
-    draw = ImageDraw.Draw(original_photo)
-    original_photo.show()
-    enhance_end.show()
+    print("change_photo mode", change_photo.mode)
+    print("change_photo size", change_photo.size)
+
+    width, height = original_photo.size
+    print( f'Photo measures {width} x {height} pixels' )
+
+    mask_data = np.zeros((height, width), dtype=np.uint8)
+    mask1_data = np.zeros((height, width), dtype=np.uint8)
+
+    mask_data [  (height//2):, :]=255
+
+    mask1_data[(width//2):, :]=255
+
+    mask = Image.fromarray(mask_data, mode = "L")
+    mask1 = Image.fromarray(mask1_data, mode="L")
+
+    print("mask mode", mask.mode)
+    print("mask size", mask.size)
+
+    half_photo1 = Image.composite(enhance, original_photo, mask1)
+
+    half_photo = Image.composite(half_photo1, change_photo, mask)
+    draw =ImageDraw.Draw(half_photo)
+
+    start1 = (0, height // 2)
+    end1 = (width, height // 2)
+    fill_color1 = (255, 99, 71)
+
+    start2 = (0, height // 1.5)
+    end2 = (width, height // 1.5)
+    fill_color2 = (255, 245, 238)
+
+    draw.line([start1, end1], fill= fill_color1, width=5)
+    draw.line([start2, end2], fill=fill_color2, width=5)
+
+    half_photo.show()
+
+
 
 if __name__ == "__main__":
     main()
