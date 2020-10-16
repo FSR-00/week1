@@ -1,11 +1,12 @@
-# week1
-
+# day1
 
 
 # Monday, 12 October 2020
 # Professor Leon Tabak
 # CSC355 Open Source Development
 # Zhifei Xu
+
+
 
 
 import numpy as np
